@@ -140,41 +140,41 @@ func checkString(t *testing.T, want string, have interface{}) bool {
 	return true
 }
 
-func TestGetValue(t *testing.T) {
+func TestRaw(t *testing.T) {
 	var key string
 	settings, _ := Parse([]byte(input))
 	t.Logf("%v\n", settings.Values)
 
 	// retrieve a map
-	if value, err := settings.GetValue("mapping"); err == nil {
+	if value, err := settings.Raw("mapping"); err == nil {
 		checkIsMap(t, value)
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve an array
-	if value, err := settings.GetValue("string-array"); err == nil {
+	if value, err := settings.Raw("string-array"); err == nil {
 		checkIsArray(t, value)
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a single value
-	if value, err := settings.GetValue("key"); err == nil {
+	if value, err := settings.Raw("key"); err == nil {
 		checkString(t, "value", value)
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a child of a map
-	if value, err := settings.GetValue("mapping.a"); err == nil {
+	if value, err := settings.Raw("mapping.a"); err == nil {
 		checkString(t, "aye", value)
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a child of an array
-	if value, err := settings.GetValue("string-array.1"); err == nil {
+	if value, err := settings.Raw("string-array.1"); err == nil {
 		checkString(t, "two", value)
 	} else {
 		t.Error(err)
@@ -182,25 +182,25 @@ func TestGetValue(t *testing.T) {
 
 	// retrieve missing value
 	key = "sir-not-appearing-in-this-film"
-	if _, err := settings.GetValue(key); err != KeyError {
+	if _, err := settings.Raw(key); err != KeyError {
 		t.Errorf("%s did not cause a KeyError", key)
 	}
 
 	// retrieve missing map value
 	key = "mapping.c"
-	if _, err := settings.GetValue(key); err != KeyError {
+	if _, err := settings.Raw(key); err != KeyError {
 		t.Errorf("%s did not cause a KeyError", key)
 	}
 
 	// retrieve missing array value
 	key = "string-array.3"
-	if _, err := settings.GetValue(key); err != KeyError {
+	if _, err := settings.Raw(key); err != KeyError {
 		t.Errorf("%s did not cause a KeyError", key)
 	}
 
 	// retrieve a bool
 	key = "values.bool"
-	if value, err := settings.GetValue(key); err == nil {
+	if value, err := settings.Raw(key); err == nil {
 		checkBool(t, true, value)
 	} else {
 		t.Error(err)
@@ -208,7 +208,7 @@ func TestGetValue(t *testing.T) {
 
 	// retrieve an int
 	key = "values.integer"
-	if value, err := settings.GetValue(key); err == nil {
+	if value, err := settings.Raw(key); err == nil {
 		checkInt(t, 1, value)
 	} else {
 		t.Error(err)
@@ -216,7 +216,7 @@ func TestGetValue(t *testing.T) {
 
 	// retrieve a float
 	key = "values.float"
-	if value, err := settings.GetValue(key); err == nil {
+	if value, err := settings.Raw(key); err == nil {
 		checkFloat(t, 2.3, value)
 	} else {
 		t.Error(err)
@@ -224,20 +224,20 @@ func TestGetValue(t *testing.T) {
 
 	// retrieve a string
 	key = "values.string"
-	if value, err := settings.GetValue(key); err == nil {
+	if value, err := settings.Raw(key); err == nil {
 		checkString(t, "value", value)
 	} else {
 		t.Error(err)
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestObject(t *testing.T) {
 	var key string
 	settings, _ := Parse([]byte(input))
 
 	// test settings retrieval
 	key = "values"
-	if item, err := settings.Get(key); err == nil {
+	if item, err := settings.Object(key); err == nil {
 		values := make(map[interface{}]interface{})
 		values["bool"] = true
 		values["integer"] = 1
@@ -251,24 +251,24 @@ func TestGet(t *testing.T) {
 
 	// test missing value
 	key = "missing"
-	if _, err := settings.Get(key); err != KeyError {
+	if _, err := settings.Object(key); err != KeyError {
 		t.Errorf("key %s found", key)
 	}
 
 	// test invalid value
 	key = "string-array"
-	if _, err := settings.Get(key); err != TypeError {
+	if _, err := settings.Object(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }
 
-func TestGetArray(t *testing.T) {
+func TestObjectArray(t *testing.T) {
 	var key string
 	settings, _ := Parse([]byte(input))
 
 	// check valid
 	key = "settings-array"
-	if items, err := settings.GetArray(key); err == nil {
+	if items, err := settings.ObjectArray(key); err == nil {
 		want := make([]*Settings, 2)
 		want1 := make(map[interface{}]interface{}, 2)
 		want1["name"] = "one"
@@ -290,21 +290,21 @@ func TestGetArray(t *testing.T) {
 
 	// check missing settings array
 	key = "missing"
-	if _, err := settings.GetArray(key); err != KeyError {
+	if _, err := settings.ObjectArray(key); err != KeyError {
 		t.Errorf("key %s found", key)
 	}
 
 	// check invalid type
 	key = "string-array"
-	if _, err := settings.GetArray(key); err != TypeError {
+	if _, err := settings.ObjectArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }
 
-func TestGetString(t *testing.T) {
+func TestString(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 	want := "value"
-	if value, err := settings.GetString("values.string"); err == nil {
+	if value, err := settings.String("values.string"); err == nil {
 		if want != value {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -313,12 +313,12 @@ func TestGetString(t *testing.T) {
 	}
 }
 
-func TestGetStringArray(t *testing.T) {
+func TestStringArray(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 
 	// valid string array
 	want := []string{"one", "two"}
-	if value, err := settings.GetStringArray("string-array"); err == nil {
+	if value, err := settings.StringArray("string-array"); err == nil {
 		if len(want) != len(value) {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -333,15 +333,15 @@ func TestGetStringArray(t *testing.T) {
 
 	// mixed array
 	key := "mixed-array"
-	if _, err := settings.GetStringArray(key); err != TypeError {
+	if _, err := settings.StringArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }
 
-func TestGetInt(t *testing.T) {
+func TestInt(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 	want := 1
-	if value, err := settings.GetInt("values.integer"); err == nil {
+	if value, err := settings.Int("values.integer"); err == nil {
 		if want != value {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -350,12 +350,12 @@ func TestGetInt(t *testing.T) {
 	}
 }
 
-func TestGetIntArray(t *testing.T) {
+func TestIntArray(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 
 	// valid string array
 	want := []int{1, 2}
-	if value, err := settings.GetIntArray("integer-array"); err == nil {
+	if value, err := settings.IntArray("integer-array"); err == nil {
 		if len(want) != len(value) {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -370,15 +370,15 @@ func TestGetIntArray(t *testing.T) {
 
 	// mixed array
 	key := "mixed-array"
-	if _, err := settings.GetIntArray(key); err != TypeError {
+	if _, err := settings.IntArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }
 
-func TestGetFloat(t *testing.T) {
+func TestFloat(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 	want := 2.3
-	if value, err := settings.GetFloat("values.float"); err == nil {
+	if value, err := settings.Float("values.float"); err == nil {
 		if want != value {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -387,12 +387,12 @@ func TestGetFloat(t *testing.T) {
 	}
 }
 
-func TestGetFloatArray(t *testing.T) {
+func TestFloatArray(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 
 	// valid string array
 	want := []float64{1.3, 2.2, 3.1}
-	if value, err := settings.GetFloatArray("float-array"); err == nil {
+	if value, err := settings.FloatArray("float-array"); err == nil {
 		if len(want) != len(value) {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -407,15 +407,15 @@ func TestGetFloatArray(t *testing.T) {
 
 	// mixed array
 	key := "mixed-array"
-	if _, err := settings.GetFloatArray(key); err != TypeError {
+	if _, err := settings.FloatArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }
 
-func TestGetBool(t *testing.T) {
+func TestBool(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 	want := true
-	if value, err := settings.GetBool("values.bool"); err == nil {
+	if value, err := settings.Bool("values.bool"); err == nil {
 		if want != value {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -424,12 +424,12 @@ func TestGetBool(t *testing.T) {
 	}
 }
 
-func TestGetBoolArray(t *testing.T) {
+func TestBoolArray(t *testing.T) {
 	settings, _ := Parse([]byte(input))
 
 	// valid string array
 	want := []bool{true, true, false, true}
-	if value, err := settings.GetBoolArray("bool-array"); err == nil {
+	if value, err := settings.BoolArray("bool-array"); err == nil {
 		if len(want) != len(value) {
 			t.Errorf("%v != %v", want, value)
 		}
@@ -444,7 +444,7 @@ func TestGetBoolArray(t *testing.T) {
 
 	// mixed array
 	key := "mixed-array"
-	if _, err := settings.GetBoolArray(key); err != TypeError {
+	if _, err := settings.BoolArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
 	}
 }

@@ -67,17 +67,17 @@ string itself is a dot (.) separated list of object names. The different
 methods will handle conversion to different types. With a few exceptions they
 are self explanatory. These methods are:
 
-- `Get`: Return a settings object.
-- `GetArray`: Return an array of settings objects.
-- `GetValue`: Return the raw value as an interface{}.
-- `GetString`
-- `GetStringArray`
-- `GetInt`
-- `GetIntArray`
-- `GetFloat`
-- `GetFloatArray`
-- `GetBool`
-- `GetBoolArray`
+- `Raw`: Return the raw value as an interface{}.
+- `Object`: Return a settings object.
+- `ObjectArray`: Return an array of settings objects.
+- `String`
+- `StringArray`
+- `Int`
+- `IntArray`
+- `Float`
+- `FloatArray`
+- `Bool`
+- `BoolArray`
 
 The get methods may return a predefined error value to indicate failure. These are:
 

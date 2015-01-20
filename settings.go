@@ -49,7 +49,7 @@ func Load(path string) (*Settings, error) {
 }
 
 // Get a value from the settings object.
-func (s *Settings) GetValue(key string) (interface{}, error) {
+func (s *Settings) Raw(key string) (interface{}, error) {
 	names := strings.Split(key, ".")
 	var data interface{} = s.Values
 	for _, name := range names {
@@ -75,8 +75,8 @@ func (s *Settings) GetValue(key string) (interface{}, error) {
 }
 
 // Get a settings object.
-func (s *Settings) Get(key string) (*Settings, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) Object(key string) (*Settings, error) {
+	if value, err := s.Raw(key); err == nil {
 		if mapping, ok := value.(map[interface{}]interface{}); ok {
 			return &Settings{Key: key, Values: mapping}, nil
 		} else {
@@ -88,8 +88,8 @@ func (s *Settings) Get(key string) (*Settings, error) {
 }
 
 // Get an array of settings objects.
-func (s *Settings) GetArray(key string) ([]*Settings, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) ObjectArray(key string) ([]*Settings, error) {
+	if value, err := s.Raw(key); err == nil {
 		if items, ok := value.([]interface{}); ok {
 			array := make([]*Settings, len(items))
 			for n, item := range items {
@@ -110,8 +110,8 @@ func (s *Settings) GetArray(key string) ([]*Settings, error) {
 }
 
 // Get a string value.
-func (s *Settings) GetString(key string) (string, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) String(key string) (string, error) {
+	if value, err := s.Raw(key); err == nil {
 		if valueStr, ok := value.(string); ok {
 			return valueStr, nil
 		} else {
@@ -123,8 +123,8 @@ func (s *Settings) GetString(key string) (string, error) {
 }
 
 // Get an array of string values.
-func (s *Settings) GetStringArray(key string) ([]string, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) StringArray(key string) ([]string, error) {
+	if value, err := s.Raw(key); err == nil {
 		if items, ok := value.([]interface{}); ok {
 			array := make([]string, len(items))
 			for n, item := range items {
@@ -145,8 +145,8 @@ func (s *Settings) GetStringArray(key string) ([]string, error) {
 }
 
 // Get an integer value.
-func (s *Settings) GetInt(key string) (int, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) Int(key string) (int, error) {
+	if value, err := s.Raw(key); err == nil {
 		if valueInt, ok := value.(int); ok {
 			return valueInt, nil
 		} else {
@@ -158,8 +158,8 @@ func (s *Settings) GetInt(key string) (int, error) {
 }
 
 // Get an array of integer values.
-func (s *Settings) GetIntArray(key string) ([]int, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) IntArray(key string) ([]int, error) {
+	if value, err := s.Raw(key); err == nil {
 		if items, ok := value.([]interface{}); ok {
 			array := make([]int, len(items))
 			for n, item := range items {
@@ -180,8 +180,8 @@ func (s *Settings) GetIntArray(key string) ([]int, error) {
 }
 
 // Get a float value.
-func (s *Settings) GetFloat(key string) (float64, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) Float(key string) (float64, error) {
+	if value, err := s.Raw(key); err == nil {
 		switch value.(type) {
 		case float64:
 			return value.(float64), nil
@@ -196,8 +196,8 @@ func (s *Settings) GetFloat(key string) (float64, error) {
 }
 
 // Get an array of float values.
-func (s *Settings) GetFloatArray(key string) ([]float64, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) FloatArray(key string) ([]float64, error) {
+	if value, err := s.Raw(key); err == nil {
 		if items, ok := value.([]interface{}); ok {
 			array := make([]float64, len(items))
 			for n, item := range items {
@@ -220,8 +220,8 @@ func (s *Settings) GetFloatArray(key string) ([]float64, error) {
 }
 
 // Get a boolean value.
-func (s *Settings) GetBool(key string) (bool, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) Bool(key string) (bool, error) {
+	if value, err := s.Raw(key); err == nil {
 		switch value.(type) {
 		case bool:
 			return value.(bool), nil
@@ -244,8 +244,8 @@ func (s *Settings) GetBool(key string) (bool, error) {
 }
 
 // Get an array of boolean values.
-func (s *Settings) GetBoolArray(key string) ([]bool, error) {
-	if value, err := s.GetValue(key); err == nil {
+func (s *Settings) BoolArray(key string) ([]bool, error) {
+	if value, err := s.Raw(key); err == nil {
 		if items, ok := value.([]interface{}); ok {
 			array := make([]bool, len(items))
 			for n, item := range items {
