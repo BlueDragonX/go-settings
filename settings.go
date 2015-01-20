@@ -48,6 +48,17 @@ func Load(path string) (*Settings, error) {
 	}
 }
 
+// Load and parse settings from the file at the provided path. If an error
+// occurs print it to stderr and call os.Exit(1).
+func LoadOrExit(path string) *Settings {
+	settings, err := Load(path)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	return settings
+}
+
 // Get a value from the settings object.
 func (s *Settings) Raw(key string) (interface{}, error) {
 	names := strings.Split(key, ".")
