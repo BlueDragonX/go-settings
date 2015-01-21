@@ -90,6 +90,7 @@ These are:
 
 - `Set`: Set an object key to the provided value. 
 - `Append`: Append a value to the array at the given key.
+- `Delete`: Delete a value at the given key.
 
 Thee set methods may return a predefined error value to indicate failure. These are:
 

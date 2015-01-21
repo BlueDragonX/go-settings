@@ -43,7 +43,12 @@ values:
   bool: true
   integer: 1
   float: 2.3
-  string: value`
+  string: value
+
+nested:
+  array:
+  - one
+  - two`
 
 func isArrayEqual(a, b []string) bool {
 	if len(a) != len(b) {
@@ -595,6 +600,64 @@ func TestAppend(t *testing.T) {
 		value, _ = settings.StringArray(key)
 		if !isArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestDelete(t *testing.T) {
+	var err error
+	var key string
+	settings, _ := Parse([]byte(input))
+
+	// delete item in root
+	key = "value"
+	settings.Set(key, "one")
+	if err = settings.Delete(key); err == nil {
+		if value, err := settings.Raw(key); err != KeyError {
+			t.Errorf("%s not deleted: %v (%s)\n", key, value, err)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// delete item in root map
+	key = "values.bool"
+	if err = settings.Delete(key); err == nil {
+		if value, err := settings.Raw(key); err != KeyError {
+			t.Errorf("%s not deleted: %v (%s)\n", key, value, err)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// delete item in root array
+	key = "string-array.one"
+	if err = settings.Delete(key); err == nil {
+		if value, err := settings.Raw(key); err != KeyError {
+			t.Errorf("%s not deleted: %v (%s)\n", key, value, err)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// delete item in nested map
+	key = "settings-array.1.value"
+	if err = settings.Delete(key); err == nil {
+		if value, err := settings.Raw(key); err != KeyError {
+			t.Errorf("%s not deleted: %v (%s)\n", key, value, err)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// delete item in nested array
+	want := []string{"two"}
+	if err = settings.Delete("nested.array.0"); err == nil {
+		value, _ := settings.StringArray("nested.array")
+		if !isArrayEqual(want, value) {
+			t.Errorf("%s not deleted: %v\n", key, value)
 		}
 	} else {
 		t.Error(err)
