@@ -8,12 +8,32 @@ import (
 	"testing"
 )
 
-
 func isElementEqual(t *testing.T, a, b interface{}) bool {
 	if reflect.TypeOf(a) == reflect.TypeOf(b) {
-		if arrayA, ok := a.([]interface{}); ok {
+		if settingsA, ok := a.(*Settings); ok {
+			settingsB := b.(*Settings)
+			if settingsA == nil {
+				return settingsB == nil
+			}
+			return settingsA.Key == settingsB.Key && isMapEqual(t, settingsA.Values, settingsB.Values)
+		} else if arrayA, ok := a.([]interface{}); ok {
 			arrayB := b.([]interface{})
 			return isArrayEqual(t, arrayA, arrayB)
+		} else if arrayA, ok := a.([]*Settings); ok {
+			arrayB := b.([]*Settings)
+			return isSettingsArrayEqual(t, arrayA, arrayB)
+		} else if arrayA, ok := a.([]string); ok {
+			arrayB := b.([]string)
+			return isStringArrayEqual(t, arrayA, arrayB)
+		} else if arrayA, ok := a.([]int); ok {
+			arrayB := b.([]int)
+			return isIntArrayEqual(t, arrayA, arrayB)
+		} else if arrayA, ok := a.([]float64); ok {
+			arrayB := b.([]float64)
+			return isFloatArrayEqual(t, arrayA, arrayB)
+		} else if arrayA, ok := a.([]bool); ok {
+			arrayB := b.([]bool)
+			return isBoolArrayEqual(t, arrayA, arrayB)
 		} else if mapA, ok := a.(map[interface{}]interface{}); ok {
 			mapB := b.(map[interface{}]interface{})
 			return isMapEqual(t, mapA, mapB)
@@ -28,13 +48,78 @@ func isElementEqual(t *testing.T, a, b interface{}) bool {
 	return false
 }
 
+func isSettingsArrayEqual(t *testing.T, a, b []*Settings) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if !isMapEqual(t, a[n].Values, b[n].Values) {
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
+			return false
+		}
+	}
+	return true
+}
+
+func isStringArrayEqual(t *testing.T, a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if a[n] != b[n] {
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
+			return false
+		}
+	}
+	return true
+}
+
+func isIntArrayEqual(t *testing.T, a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if a[n] != b[n] {
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
+			return false
+		}
+	}
+	return true
+}
+
+func isFloatArrayEqual(t *testing.T, a, b []float64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if a[n] != b[n] {
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
+			return false
+		}
+	}
+	return true
+}
+
+func isBoolArrayEqual(t *testing.T, a, b []bool) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if a[n] != b[n] {
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
+			return false
+		}
+	}
+	return true
+}
+
 func isArrayEqual(t *testing.T, a, b []interface{}) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for n := range a {
 		if !isElementEqual(t, a[n], b[n]) {
-			t.Logf("index %d unequal\n", n)
+			t.Logf("index %d unequal: %v != %v\n", n, a, b)
 			return false
 		}
 	}

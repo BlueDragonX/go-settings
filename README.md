@@ -84,6 +84,11 @@ The get methods may return a predefined error value to indicate failure. These a
 - `KeyError`: The key was not found.
 - `TypeError`: Conversion to the requested type failed.
 
+Each get method has a corresponding `Dflt` method which takes a second
+parameter containing a default value to return should an error occur. You may
+append `Dflt` to the name of any get function 
+for this functionality.
+
 There are two methods used to set values. They will replace any values at the
 provide key with the ones provided. Both objects and arrays are supported.
 These are:
