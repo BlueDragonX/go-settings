@@ -17,7 +17,7 @@ func isStringArrayEqual(a, b []string) bool {
 func TestSet(t *testing.T) {
 	var key string
 	var want, value interface{}
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// set top level value
 	key = "new-value"
@@ -60,7 +60,7 @@ func TestAppend(t *testing.T) {
 	var err error
 	var key string
 	var want, value []string
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// add to new root array
 	key = "new-array"
@@ -157,7 +157,7 @@ func TestAppend(t *testing.T) {
 func TestDelete(t *testing.T) {
 	var err error
 	var key string
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// delete item in root
 	key = "value"

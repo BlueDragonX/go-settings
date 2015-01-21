@@ -99,7 +99,7 @@ func checkString(t *testing.T, want string, have interface{}) bool {
 
 func TestRaw(t *testing.T) {
 	var key string
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 	t.Logf("%v\n", settings.Values)
 
 	// retrieve a map
@@ -190,7 +190,7 @@ func TestRaw(t *testing.T) {
 
 func TestObject(t *testing.T) {
 	var key string
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// test settings retrieval
 	key = "values"
@@ -221,7 +221,7 @@ func TestObject(t *testing.T) {
 
 func TestObjectArray(t *testing.T) {
 	var key string
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// check valid
 	key = "settings-array"
@@ -259,7 +259,7 @@ func TestObjectArray(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 	want := "value"
 	if value, err := settings.String("values.string"); err == nil {
 		if want != value {
@@ -271,7 +271,7 @@ func TestString(t *testing.T) {
 }
 
 func TestStringArray(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// valid string array
 	want := []string{"one", "two"}
@@ -296,7 +296,7 @@ func TestStringArray(t *testing.T) {
 }
 
 func TestInt(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 	want := 1
 	if value, err := settings.Int("values.integer"); err == nil {
 		if want != value {
@@ -308,7 +308,7 @@ func TestInt(t *testing.T) {
 }
 
 func TestIntArray(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// valid string array
 	want := []int{1, 2}
@@ -333,7 +333,7 @@ func TestIntArray(t *testing.T) {
 }
 
 func TestFloat(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 	want := 2.3
 	if value, err := settings.Float("values.float"); err == nil {
 		if want != value {
@@ -345,7 +345,7 @@ func TestFloat(t *testing.T) {
 }
 
 func TestFloatArray(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// valid string array
 	want := []float64{1.3, 2.2, 3.1}
@@ -370,7 +370,7 @@ func TestFloatArray(t *testing.T) {
 }
 
 func TestBool(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 	want := true
 	if value, err := settings.Bool("values.bool"); err == nil {
 		if want != value {
@@ -382,7 +382,7 @@ func TestBool(t *testing.T) {
 }
 
 func TestBoolArray(t *testing.T) {
-	settings, _ := Parse([]byte(input))
+	settings := getSettings()
 
 	// valid string array
 	want := []bool{true, true, false, true}

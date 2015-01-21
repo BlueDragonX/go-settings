@@ -8,51 +8,6 @@ import (
 	"testing"
 )
 
-var input string = `key: value
-
-mapping:
-  a: aye
-  b: bee
-
-string-array:
-- one
-- two
-
-integer-array:
-- 1
-- 2
-
-float-array:
-- 1.3
-- 2.2
-- 3.1
-
-bool-array:
-- true
-- true
-- false
-- true
-
-settings-array:
-- name: one
-  value: I won!
-- name: two
-  value: Me too!
-
-mixed-array:
-- one
-- 2
-
-values:
-  bool: true
-  integer: 1
-  float: 2.3
-  string: value
-
-nested:
-  array:
-  - one
-  - two`
 
 func isElementEqual(t *testing.T, a, b interface{}) bool {
 	if reflect.TypeOf(a) == reflect.TypeOf(b) {
@@ -97,6 +52,55 @@ func isMapEqual(t *testing.T, a, b map[interface{}]interface{}) bool {
 		}
 	}
 	return true
+}
+
+func getSettings() *Settings {
+	settings, _ := Parse([]byte(`key: value
+
+mapping:
+  a: aye
+  b: bee
+
+string-array:
+- one
+- two
+
+integer-array:
+- 1
+- 2
+
+float-array:
+- 1.3
+- 2.2
+- 3.1
+
+bool-array:
+- true
+- true
+- false
+- true
+
+settings-array:
+- name: one
+  value: I won!
+- name: two
+  value: Me too!
+
+mixed-array:
+- one
+- 2
+
+values:
+  bool: true
+  integer: 1
+  float: 2.3
+  string: value
+
+nested:
+  array:
+  - one
+  - two`))
+	return settings
 }
 
 func getBasicInput() ([]byte, map[interface{}]interface{}) {
