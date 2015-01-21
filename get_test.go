@@ -1,101 +1,9 @@
 package settings
 
-import "testing"
-
-func checkMapEqual(t *testing.T, want, have map[interface{}]interface{}) bool {
-	if len(want) != len(have) {
-		t.Errorf("%v != %v", want, have)
-		return false
-	}
-	for k, v := range want {
-		if v != have[k] {
-			t.Errorf("want[%v] != have[%v] (%v != %v)", k, k, v, have[k])
-			return false
-		}
-	}
-	return true
-}
-
-func checkIsMap(t *testing.T, have interface{}) bool {
-	if _, ok := have.(map[interface{}]interface{}); !ok {
-		t.Errorf("%v is not a map", have)
-		return false
-	}
-	return true
-}
-
-func checkIsArray(t *testing.T, have interface{}) bool {
-	if _, ok := have.([]interface{}); !ok {
-		t.Errorf("%v is not an array", have)
-		return false
-	}
-	return true
-}
-
-func checkSettings(t *testing.T, want *Settings, have interface{}) bool {
-	if settings, ok := have.(*Settings); ok {
-		if settings.Key != want.Key {
-			t.Errorf("key is incorrect (%s != %s)", want.Key, settings.Key)
-		}
-		checkMapEqual(t, settings.Values, want.Values)
-	} else {
-		t.Errorf("%v is not a *Settings", have)
-		return false
-	}
-	return true
-}
-
-func checkBool(t *testing.T, want bool, have interface{}) bool {
-	if boolValue, ok := have.(bool); ok {
-		if boolValue != want {
-			t.Errorf("%t != %t", want, boolValue)
-			return false
-		}
-	} else {
-		t.Errorf("%v is not a bool", have)
-		return false
-	}
-	return true
-}
-
-func checkInt(t *testing.T, want int, have interface{}) bool {
-	if intValue, ok := have.(int); ok {
-		if intValue != want {
-			t.Errorf("%d != %d", want, intValue)
-			return false
-		}
-	} else {
-		t.Errorf("%v is not an integer", have)
-		return false
-	}
-	return true
-}
-
-func checkFloat(t *testing.T, want float64, have interface{}) bool {
-	if floatValue, ok := have.(float64); ok {
-		if floatValue != want {
-			t.Errorf("%f != %f", want, floatValue)
-			return false
-		}
-	} else {
-		t.Errorf("%v is not an float", have)
-		return false
-	}
-	return true
-}
-
-func checkString(t *testing.T, want string, have interface{}) bool {
-	if stringValue, ok := have.(string); ok {
-		if stringValue != want {
-			t.Errorf("%s != %s", want, stringValue)
-			return false
-		}
-	} else {
-		t.Errorf("%v is not a string", have)
-		return false
-	}
-	return true
-}
+import (
+	"reflect"
+	"testing"
+)
 
 func TestRaw(t *testing.T) {
 	// get a value from a new object
@@ -109,35 +17,45 @@ func TestRaw(t *testing.T) {
 
 	// retrieve a map
 	if value, err := settings.Raw("mapping"); err == nil {
-		checkIsMap(t, value)
+		if _, ok := value.(map[interface{}]interface{}); !ok {
+			t.Errorf("%v is not a map", value)
+		}
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve an array
 	if value, err := settings.Raw("string-array"); err == nil {
-		checkIsArray(t, value)
+		if _, ok := value.([]interface{}); !ok {
+			t.Errorf("%v is not an array", value)
+		}
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a single value
 	if value, err := settings.Raw("key"); err == nil {
-		checkString(t, "value", value)
+		if "value" != value {
+			t.Errorf("%v != %v", "value", value)
+		}
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a child of a map
 	if value, err := settings.Raw("mapping.a"); err == nil {
-		checkString(t, "aye", value)
+		if "aye" != value {
+			t.Errorf("%v != %v", "aye", value)
+		}
 	} else {
 		t.Error(err)
 	}
 
 	// retrieve a child of an array
 	if value, err := settings.Raw("string-array.1"); err == nil {
-		checkString(t, "two", value)
+		if "two" != value {
+			t.Errorf("%v != %v", "two", value)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -163,7 +81,9 @@ func TestRaw(t *testing.T) {
 	// retrieve a bool
 	key = "values.bool"
 	if value, err := settings.Raw(key); err == nil {
-		checkBool(t, true, value)
+		if value != true {
+			t.Errorf("%v != %v", true, value)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -171,7 +91,9 @@ func TestRaw(t *testing.T) {
 	// retrieve an int
 	key = "values.integer"
 	if value, err := settings.Raw(key); err == nil {
-		checkInt(t, 1, value)
+		if 1 != value {
+			t.Errorf("%v != %v", 1, value)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -179,7 +101,9 @@ func TestRaw(t *testing.T) {
 	// retrieve a float
 	key = "values.float"
 	if value, err := settings.Raw(key); err == nil {
-		checkFloat(t, 2.3, value)
+		if 2.3 != value {
+			t.Errorf("%v != %v", 2.3, value)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -187,7 +111,9 @@ func TestRaw(t *testing.T) {
 	// retrieve a string
 	key = "values.string"
 	if value, err := settings.Raw(key); err == nil {
-		checkString(t, "value", value)
+		if "value" != value {
+			t.Errorf("%v != %v", "value", value)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -206,7 +132,9 @@ func TestObject(t *testing.T) {
 		values["float"] = 2.3
 		values["string"] = "value"
 		want := &Settings{Key: key, Values: values}
-		checkSettings(t, want, item)
+		if !reflect.DeepEqual(want, item) {
+			t.Errorf("%v != %v", want, item)
+		}
 	} else {
 		t.Error(err)
 	}
@@ -240,11 +168,14 @@ func TestObjectArray(t *testing.T) {
 		want2["value"] = "Me too!"
 		want[0] = &Settings{Key: "settings-array.0", Values: want1}
 		want[1] = &Settings{Key: "settings-array.1", Values: want2}
-		if len(want) != len(items) {
-			t.Errorf("settings array has incorrect length")
+
+		if !reflect.DeepEqual(want, items) {
+			t.Errorf("%v != %v", want, items)
 		}
 		for n, item := range items {
-			checkSettings(t, want[n], item)
+			if !reflect.DeepEqual(want[n], item) {
+				t.Errorf("%v != %v", want[n], item)
+			}
 		}
 	} else {
 		t.Error(err)
@@ -281,13 +212,8 @@ func TestStringArray(t *testing.T) {
 	// valid string array
 	want := []string{"one", "two"}
 	if value, err := settings.StringArray("string-array"); err == nil {
-		if len(want) != len(value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
-		}
-		for n, item := range want {
-			if item != value[n] {
-				t.Errorf("%v != %v", want, value)
-			}
 		}
 	} else {
 		t.Error(err)
@@ -318,13 +244,8 @@ func TestIntArray(t *testing.T) {
 	// valid string array
 	want := []int{1, 2}
 	if value, err := settings.IntArray("integer-array"); err == nil {
-		if len(want) != len(value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
-		}
-		for n, item := range want {
-			if item != value[n] {
-				t.Errorf("%v != %v", want, value)
-			}
 		}
 	} else {
 		t.Error(err)
@@ -355,13 +276,8 @@ func TestFloatArray(t *testing.T) {
 	// valid string array
 	want := []float64{1.3, 2.2, 3.1}
 	if value, err := settings.FloatArray("float-array"); err == nil {
-		if len(want) != len(value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
-		}
-		for n, item := range want {
-			if item != value[n] {
-				t.Errorf("%v != %v", want, value)
-			}
 		}
 	} else {
 		t.Error(err)
@@ -392,13 +308,8 @@ func TestBoolArray(t *testing.T) {
 	// valid string array
 	want := []bool{true, true, false, true}
 	if value, err := settings.BoolArray("bool-array"); err == nil {
-		if len(want) != len(value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
-		}
-		for n, item := range want {
-			if item != value[n] {
-				t.Errorf("%v != %v", want, value)
-			}
 		}
 	} else {
 		t.Error(err)

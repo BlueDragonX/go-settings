@@ -8,131 +8,13 @@ import (
 	"testing"
 )
 
-func isElementEqual(t *testing.T, a, b interface{}) bool {
-	if reflect.TypeOf(a) == reflect.TypeOf(b) {
-		if settingsA, ok := a.(*Settings); ok {
-			settingsB := b.(*Settings)
-			if settingsA == nil {
-				return settingsB == nil
-			}
-			return settingsA.Key == settingsB.Key && isMapEqual(t, settingsA.Values, settingsB.Values)
-		} else if arrayA, ok := a.([]interface{}); ok {
-			arrayB := b.([]interface{})
-			return isArrayEqual(t, arrayA, arrayB)
-		} else if arrayA, ok := a.([]*Settings); ok {
-			arrayB := b.([]*Settings)
-			return isSettingsArrayEqual(t, arrayA, arrayB)
-		} else if arrayA, ok := a.([]string); ok {
-			arrayB := b.([]string)
-			return isStringArrayEqual(t, arrayA, arrayB)
-		} else if arrayA, ok := a.([]int); ok {
-			arrayB := b.([]int)
-			return isIntArrayEqual(t, arrayA, arrayB)
-		} else if arrayA, ok := a.([]float64); ok {
-			arrayB := b.([]float64)
-			return isFloatArrayEqual(t, arrayA, arrayB)
-		} else if arrayA, ok := a.([]bool); ok {
-			arrayB := b.([]bool)
-			return isBoolArrayEqual(t, arrayA, arrayB)
-		} else if mapA, ok := a.(map[interface{}]interface{}); ok {
-			mapB := b.(map[interface{}]interface{})
-			return isMapEqual(t, mapA, mapB)
-		} else {
-			if a != b {
-				t.Log("values unequal")
-			}
-			return a == b
-		}
-	}
-	t.Logf("unmatched types %v, %v\n", reflect.TypeOf(a), reflect.TypeOf(b))
-	return false
-}
-
 func isSettingsArrayEqual(t *testing.T, a, b []*Settings) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for n := range a {
-		if !isMapEqual(t, a[n].Values, b[n].Values) {
+		if !reflect.DeepEqual(a[n].Values, b[n].Values) {
 			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isStringArrayEqual(t *testing.T, a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for n := range a {
-		if a[n] != b[n] {
-			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isIntArrayEqual(t *testing.T, a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for n := range a {
-		if a[n] != b[n] {
-			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isFloatArrayEqual(t *testing.T, a, b []float64) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for n := range a {
-		if a[n] != b[n] {
-			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isBoolArrayEqual(t *testing.T, a, b []bool) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for n := range a {
-		if a[n] != b[n] {
-			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isArrayEqual(t *testing.T, a, b []interface{}) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for n := range a {
-		if !isElementEqual(t, a[n], b[n]) {
-			t.Logf("index %d unequal: %v != %v\n", n, a, b)
-			return false
-		}
-	}
-	return true
-}
-
-func isMapEqual(t *testing.T, a, b map[interface{}]interface{}) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for k, v := range a {
-		if !isElementEqual(t, v, b[k]) {
-			t.Logf("key %v unequal\n", k)
 			return false
 		}
 	}
@@ -230,7 +112,7 @@ func getBasicFile(t *testing.T) (string, map[interface{}]interface{}) {
 func TestParse(t *testing.T) {
 	data, want := getBasicInput()
 	if have, err := Parse(data); err == nil {
-		if !isElementEqual(t, have.Values, want) {
+		if !reflect.DeepEqual(have.Values, want) {
 			t.Errorf("%v != %v", want, have)
 		}
 	} else {
@@ -242,7 +124,7 @@ func TestRead(t *testing.T) {
 	data, want := getBasicInput()
 	reader := bytes.NewBuffer(data)
 	if have, err := Read(reader); err == nil {
-		if !isElementEqual(t, have.Values, want) {
+		if !reflect.DeepEqual(have.Values, want) {
 			t.Errorf("%v != %v", want, have)
 		}
 	} else {
@@ -255,7 +137,7 @@ func TestLoad(t *testing.T) {
 	defer os.Remove(path)
 
 	if have, err := Load(path); err == nil {
-		if !isElementEqual(t, have.Values, want) {
+		if !reflect.DeepEqual(have.Values, want) {
 			t.Errorf("%v != %v", want, have)
 		}
 	} else {
@@ -268,7 +150,7 @@ func TestLoadOrExit(t *testing.T) {
 	defer os.Remove(path)
 
 	have := LoadOrExit(path)
-	if !isElementEqual(t, have.Values, want) {
+	if !reflect.DeepEqual(have.Values, want) {
 		t.Errorf("%v != %v", want, have)
 	}
 }

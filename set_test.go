@@ -1,6 +1,9 @@
 package settings
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestSet(t *testing.T) {
 	var key string
@@ -68,7 +71,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "a")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -82,7 +85,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "a")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -95,7 +98,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "b")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -108,7 +111,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "three")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -121,7 +124,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "one")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -134,7 +137,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "two")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -147,7 +150,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "one")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -160,7 +163,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "two")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -218,7 +221,7 @@ func TestDelete(t *testing.T) {
 	want := []string{"two"}
 	if err = settings.Delete("nested.array.0"); err == nil {
 		value, _ := settings.StringArray("nested.array")
-		if !isElementEqual(t, want, value) {
+		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%s not deleted: %v\n", key, value)
 		}
 	} else {
