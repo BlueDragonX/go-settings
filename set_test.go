@@ -2,7 +2,7 @@ package settings
 
 import "testing"
 
-func isArrayEqual(a, b []string) bool {
+func isStringArrayEqual(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
 	}
@@ -68,7 +68,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "a")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -81,7 +81,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "b")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -94,7 +94,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "three")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -107,7 +107,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "one")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -120,7 +120,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "two")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -133,7 +133,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "one")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -146,7 +146,7 @@ func TestAppend(t *testing.T) {
 	err = settings.Append(key, "two")
 	if err == nil {
 		value, _ = settings.StringArray(key)
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}
 	} else {
@@ -204,7 +204,7 @@ func TestDelete(t *testing.T) {
 	want := []string{"two"}
 	if err = settings.Delete("nested.array.0"); err == nil {
 		value, _ := settings.StringArray("nested.array")
-		if !isArrayEqual(want, value) {
+		if !isStringArrayEqual(want, value) {
 			t.Errorf("%s not deleted: %v\n", key, value)
 		}
 	} else {
