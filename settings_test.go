@@ -662,4 +662,10 @@ func TestDelete(t *testing.T) {
 	} else {
 		t.Error(err)
 	}
+
+	// delete a non-existent key
+	key = "not-appearing-in-this-film"
+	if err = settings.Delete(key); err != nil {
+		t.Error(err)
+	}
 }
