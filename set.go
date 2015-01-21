@@ -78,6 +78,9 @@ func getParent(value interface{}, path []string) (parent interface{}, err error)
 // IndexError - a key cannot be converted to an integer for a child array
 // RangeError - the index is out of range for a child array
 func (s *Settings) Set(key string, value interface{}) error {
+	if s.Values == nil {
+		s.Values = make(map[interface{}]interface{})
+	}
 	names := strings.Split(key, ".")
 	if parent, err := createPath(s.Values, names[:len(names)-1]); err == nil {
 		return setElement(parent, names[len(names)-1], value)
@@ -96,6 +99,10 @@ func (s *Settings) Append(key string, value interface{}) error {
 	var err error
 	var parent, arrayObj interface{}
 	var array []interface{}
+
+	if s.Values == nil {
+		s.Values = make(map[interface{}]interface{})
+	}
 
 	if obj, ok := value.(*Settings); ok {
 		value = obj.Values

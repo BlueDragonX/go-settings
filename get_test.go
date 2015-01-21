@@ -98,9 +98,14 @@ func checkString(t *testing.T, want string, have interface{}) bool {
 }
 
 func TestRaw(t *testing.T) {
+	// get a value from a new object
+	settings := &Settings{}
+	if _, err := settings.Raw("nope"); err != KeyError {
+		t.Errorf("empty settings error is invalid: %s", err)
+	}
+
 	var key string
-	settings := getSettings()
-	t.Logf("%v\n", settings.Values)
+	settings = getSettings()
 
 	// retrieve a map
 	if value, err := settings.Raw("mapping"); err == nil {

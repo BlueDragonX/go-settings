@@ -5,9 +5,20 @@ import "testing"
 func TestSet(t *testing.T) {
 	var key string
 	var want, value interface{}
-	settings := getSettings()
+	var settings *Settings
+
+	// set a value in an empty settings object
+	key = "key"
+	want = "value"
+	settings = &Settings{}
+	settings.Set(key, want)
+	value, _ = settings.String(key)
+	if want != value {
+		t.Errorf("%s != %s", want, value)
+	}
 
 	// set top level value
+	settings = getSettings()
 	key = "new-value"
 	want = "Hello! I'm new here."
 	settings.Set(key, want)
@@ -48,9 +59,24 @@ func TestAppend(t *testing.T) {
 	var err error
 	var key string
 	var want, value []string
-	settings := getSettings()
+	var settings *Settings
+
+	// add to new root array in empty settings
+	settings = &Settings{}
+	key = "new-array"
+	want = []string{"a"}
+	err = settings.Append(key, "a")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isElementEqual(t, want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
 
 	// add to new root array
+	settings = getSettings()
 	key = "new-array"
 	want = []string{"a"}
 	err = settings.Append(key, "a")
