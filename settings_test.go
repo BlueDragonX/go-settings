@@ -32,14 +32,26 @@ string-array:
 - one
 - two
 
+string-map:
+  a: aye
+  b: bee
+
 integer-array:
 - 1
 - 2
+
+integer-map:
+  one: 1
+  two: 2
 
 float-array:
 - 1.3
 - 2.2
 - 3.1
+
+float-map:
+  one: 1.1
+  two: 2.2
 
 bool-array:
 - true
@@ -47,11 +59,21 @@ bool-array:
 - false
 - true
 
+bool-map:
+  "yes": true
+  "no": false
+
 settings-array:
 - name: one
   value: I won!
 - name: two
   value: Me too!
+
+settings-map:
+  one:
+    value: I won!
+  two:
+    value: Me too!
 
 mixed-array:
 - one

@@ -194,6 +194,26 @@ func TestObjectArray(t *testing.T) {
 	}
 }
 
+func TestObjectMap(t *testing.T) {
+	settings := getSettings()
+
+	want := make(map[string]*Settings)
+	values := make(map[interface{}]interface{})
+	values["value"] = "I won!"
+	want["one"] = &Settings{Key: "settings-map.one", Values: values}
+	values = make(map[interface{}]interface{})
+	values["value"] = "Me too!"
+	want["two"] = &Settings{Key: "settings-map.two", Values: values}
+
+	if value, err := settings.ObjectMap("settings-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
 func TestString(t *testing.T) {
 	settings := getSettings()
 	want := "value"
@@ -223,6 +243,20 @@ func TestStringArray(t *testing.T) {
 	key := "mixed-array"
 	if _, err := settings.StringArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
+	}
+}
+
+func TestStringMap(t *testing.T) {
+	settings := getSettings()
+
+	// valid string map
+	want := map[string]string{"a": "aye", "b": "bee"}
+	if value, err := settings.StringMap("string-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
 	}
 }
 
@@ -258,6 +292,20 @@ func TestIntArray(t *testing.T) {
 	}
 }
 
+func TestIntMap(t *testing.T) {
+	settings := getSettings()
+
+	// valid string map
+	want := map[string]int{"one": 1, "two": 2}
+	if value, err := settings.IntMap("integer-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
 func TestFloat(t *testing.T) {
 	settings := getSettings()
 	want := 2.3
@@ -290,6 +338,20 @@ func TestFloatArray(t *testing.T) {
 	}
 }
 
+func TestFloatMap(t *testing.T) {
+	settings := getSettings()
+
+	// valid string map
+	want := map[string]float64{"one": 1.1, "two": 2.2}
+	if value, err := settings.FloatMap("float-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
 func TestBool(t *testing.T) {
 	settings := getSettings()
 	want := true
@@ -319,5 +381,19 @@ func TestBoolArray(t *testing.T) {
 	key := "mixed-array"
 	if _, err := settings.BoolArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
+	}
+}
+
+func TestBoolMap(t *testing.T) {
+	settings := getSettings()
+
+	// valid string map
+	want := map[string]bool{"yes": true, "no": false}
+	if value, err := settings.BoolMap("bool-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
 	}
 }

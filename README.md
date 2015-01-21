@@ -70,14 +70,19 @@ are self explanatory. These methods are:
 - `Raw`: Return the raw value as an interface{}.
 - `Object`: Return a settings object.
 - `ObjectArray`: Return an array of settings objects.
+- `ObjectMap`: Return a string index map of settings objects.
 - `String`
 - `StringArray`
+- `StringMap`
 - `Int`
 - `IntArray`
+- `IntMap`
 - `Float`
 - `FloatArray`
+- `FloatMap`
 - `Bool`
 - `BoolArray`
+- `BoolMap`
 
 The get methods may return a predefined error value to indicate failure. These are:
 
