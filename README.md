@@ -84,6 +84,19 @@ The get methods may return a predefined error value to indicate failure. These a
 - `KeyError`: The key was not found.
 - `TypeError`: Conversion to the requested type failed.
 
+There are two methods used to set values. They will replace any values at the
+provide key with the ones provided. Both objects and arrays are supported.
+These are:
+
+- `Set`: Set an object key to the provided value. 
+- `Append`: Append a value to the array at the given key.
+
+Thee set methods may return a predefined error value to indicate failure. These are:
+
+- `ObjectError`: A child object has an invalid type.
+- `IndexError`: A key cannot be converted to an integer for a child array.
+- `RangeError`: The index is out of range for a child array.
+
 License
 -------
 Copyright (c) 2014 Ryan Bourgeois. Licensed under BSD-Modified. See the LICENSE

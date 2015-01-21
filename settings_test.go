@@ -45,6 +45,18 @@ values:
   float: 2.3
   string: value`
 
+func isArrayEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for n := range a {
+		if a[n] != b[n] {
+			return false
+		}
+	}
+	return true
+}
+
 func checkMapEqual(t *testing.T, want, have map[interface{}]interface{}) bool {
 	if len(want) != len(have) {
 		t.Errorf("%v != %v", want, have)
@@ -446,5 +458,145 @@ func TestBoolArray(t *testing.T) {
 	key := "mixed-array"
 	if _, err := settings.BoolArray(key); err != TypeError {
 		t.Errorf("key %s is valid", key)
+	}
+}
+
+func TestSet(t *testing.T) {
+	var key string
+	var want, value interface{}
+	settings, _ := Parse([]byte(input))
+
+	// set top level value
+	key = "new-value"
+	want = "Hello! I'm new here."
+	settings.Set(key, want)
+	value, _ = settings.String(key)
+	if want != value {
+		t.Errorf("%s != %s", want, value)
+	}
+
+	// set map value
+	key = "mapping.a"
+	want = "eh"
+	settings.Set(key, want)
+	value, _ = settings.String(key)
+	if want != value {
+		t.Errorf("%s != %s", want, value)
+	}
+
+	// set array value
+	key = "integer-array.1"
+	want = 3
+	settings.Set(key, want)
+	value, _ = settings.Int(key)
+	if want != value {
+		t.Errorf("%s != %s", want, value)
+	}
+
+	// set value to new map
+	key = "new.map.here"
+	want = "there"
+	settings.Set(key, want)
+	value, _ = settings.String(key)
+	if want != value {
+		t.Errorf("%s != %s", want, value)
+	}
+}
+
+func TestAppend(t *testing.T) {
+	var err error
+	var key string
+	var want, value []string
+	settings, _ := Parse([]byte(input))
+
+	// add to new root array
+	key = "new-array"
+	want = []string{"a"}
+	err = settings.Append(key, "a")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to existing array with elements in it
+	key = "new-array"
+	want = []string{"a", "b"}
+	err = settings.Append(key, "b")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to existing root array
+	key = "string-array"
+	want = []string{"one", "two", "three"}
+	err = settings.Append(key, "three")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to new array in map
+	key = "values.array"
+	want = []string{"one"}
+	err = settings.Append(key, "one")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to existing array in map
+	key = "values.array"
+	want = []string{"one", "two"}
+	err = settings.Append(key, "two")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to new array in array
+	key = "mixed-array.0"
+	want = []string{"one"}
+	err = settings.Append(key, "one")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+
+	// add to existing array in array
+	key = "mixed-array.0"
+	want = []string{"one", "two"}
+	err = settings.Append(key, "two")
+	if err == nil {
+		value, _ = settings.StringArray(key)
+		if !isArrayEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
 	}
 }

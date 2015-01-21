@@ -11,7 +11,10 @@ import (
 	"strings"
 )
 
+var IndexError error = errors.New("invalid index")
 var KeyError error = errors.New("key not found")
+var ObjectError error = errors.New("invalid object")
+var RangeError error = errors.New("index out of range")
 var TypeError error = errors.New("invalid type conversion")
 
 type Settings struct {
@@ -57,6 +60,116 @@ func LoadOrExit(path string) *Settings {
 		os.Exit(1)
 	}
 	return settings
+}
+
+// Get the value at the index of the provided map or array.
+func getElement(obj interface{}, index string) (interface{}, error) {
+	switch obj.(type) {
+	case map[interface{}]interface{}:
+		if item, ok := (obj.(map[interface{}]interface{}))[index]; ok {
+			return item, nil
+		} else {
+			return nil, IndexError
+		}
+	case []interface{}:
+		if n, err := strconv.Atoi(index); err == nil {
+			return (obj.([]interface{}))[n], nil
+		}
+	}
+	return nil, ObjectError
+}
+
+// Set the value at the index of the provided map or array.
+func setElement(obj interface{}, index string, value interface{}) error {
+	if obj, ok := value.(*Settings); ok {
+		value = obj.Values
+	}
+
+	if mapping, ok := obj.(map[interface{}]interface{}); ok {
+		mapping[index] = value
+	} else if array, ok := obj.([]interface{}); ok {
+		n, err := strconv.Atoi(index)
+		if err != nil {
+			return IndexError
+		}
+		if n < 0 || n >= len(array) {
+			return RangeError
+		}
+		array[n] = value
+	} else {
+		return ObjectError
+	}
+	return nil
+}
+
+// Create maps in `values` along the provided path and return the last created map.
+func createPath(values interface{}, path []string) (interface{}, error) {
+	for _, name := range path {
+		if next, err := getElement(values, name); err == nil {
+			values = next
+		} else if err == IndexError {
+			next = make(map[interface{}]interface{})
+			setElement(values, name, next)
+			values = next
+		} else {
+			return nil, err
+		}
+	}
+	return values, nil
+}
+
+// Set a value in the settings object. This overrides all keys in the path that
+// are not already objects. The following errors may be returned:
+//
+// ObjectError - a child object is not a `map[interface{}]interface{}` or `[]interface{}`
+// IndexError - a key cannot be converted to an integer for a child array
+// RangeError - the index is out of range for a child array
+func (s *Settings) Set(key string, value interface{}) error {
+	names := strings.Split(key, ".")
+	if parent, err := createPath(s.Values, names[:len(names)-1]); err == nil {
+		return setElement(parent, names[len(names)-1], value)
+	} else {
+		return err
+	}
+}
+
+// Append a value to an array. Creates an array at that location if it does not
+// exist. The following errors may be returned:
+//
+// ObjectError - a child object is not a `map[interface{}]interface{}` or `[]interface{}`
+// IndexError - a key cannot be converted to an integer for a child array
+func (s *Settings) Append(key string, value interface{}) error {
+	var ok bool
+	var err error
+	var parent, arrayObj interface{}
+	var array []interface{}
+	var name string
+
+	if obj, ok := value.(*Settings); ok {
+		value = obj.Values
+	}
+
+	names := strings.Split(key, ".")
+	if len(names) == 1 {
+		name = names[0]
+		parent = s.Values
+	} else {
+		name = names[len(names)-1]
+		path := names[:len(names)-1]
+		if parent, err = createPath(s.Values, path); err != nil {
+			return err
+		}
+	}
+
+	if arrayObj, err = getElement(parent, name); err == IndexError {
+		array = make([]interface{}, 0)
+	} else if err != nil {
+		return err
+	} else if array, ok = arrayObj.([]interface{}); !ok {
+		array = make([]interface{}, 0)
+	}
+
+	return setElement(parent, name, append(array, value))
 }
 
 // Get a value from the settings object.
