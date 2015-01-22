@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -45,6 +46,44 @@ func setElement(obj interface{}, index string, value interface{}) error {
 	return nil
 }
 
+// Recursively convert value to an interface storage type.
+func getInterface(value interface{}) interface{} {
+	refValue := reflect.ValueOf(value)
+	switch refValue.Kind() {
+	case reflect.Ptr:
+		return getInterface(refValue.Elem())
+	case reflect.Struct:
+		mapping := make(map[interface{}]interface{}, refValue.NumField())
+		refType := refValue.Type()
+		for i := 0; i < refType.NumField(); i++ {
+			field := refType.Field(i)
+			if field.PkgPath == "" {
+				mapValue := refValue.Field(i).Interface()
+				mapping[field.Name] = getInterface(mapValue)
+			}
+		}
+		return mapping
+	case reflect.Map:
+		mapping := make(map[interface{}]interface{}, refValue.Len())
+		for _, keyValue := range refValue.MapKeys() {
+			mapValue := refValue.MapIndex(keyValue).Interface()
+			mapping[keyValue.Interface()] = getInterface(mapValue)
+		}
+		return mapping
+	case reflect.Slice:
+		fallthrough
+	case reflect.Array:
+		array := make([]interface{}, refValue.Len())
+		for i := 0; i < refValue.Len(); i++ {
+			arrayValue := refValue.Index(i).Interface()
+			array[i] = getInterface(arrayValue)
+		}
+		return array
+	default:
+		return value
+	}
+}
+
 // Create maps in `values` along the provided path and return the last created map.
 func createPath(values interface{}, path []string) (interface{}, error) {
 	for _, name := range path {
@@ -83,7 +122,7 @@ func (s *Settings) Set(key string, value interface{}) error {
 	}
 	names := strings.Split(key, ".")
 	if parent, err := createPath(s.Values, names[:len(names)-1]); err == nil {
-		return setElement(parent, names[len(names)-1], value)
+		return setElement(parent, names[len(names)-1], getInterface(value))
 	} else {
 		return err
 	}
@@ -122,7 +161,7 @@ func (s *Settings) Append(key string, value interface{}) error {
 		array = make([]interface{}, 0)
 	}
 
-	return setElement(parent, name, append(array, value))
+	return setElement(parent, name, append(array, getInterface(value)))
 }
 
 // Delete a key. May return an error on failure. A non-existent key is not an error case.

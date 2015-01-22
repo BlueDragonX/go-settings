@@ -56,6 +56,43 @@ func TestSet(t *testing.T) {
 	if want != value {
 		t.Errorf("%s != %s", want, value)
 	}
+
+	// set non-interface map
+	key = "new.map.there"
+	want = map[interface{}]interface{}{"a": "aye", "b": "bee"}
+	value = map[string]string{"a": "aye", "b": "bee"}
+	settings.Set(key, value)
+	value, _ = settings.Raw(key)
+	if !reflect.DeepEqual(want, value) {
+		t.Errorf("%v != %v", want, value)
+	}
+
+	// set non-interface array
+	key = "new.array.there"
+	want = []interface{}{"one", "two"}
+	value = []string{"one", "two"}
+	settings.Set(key, value)
+	value, _ = settings.Raw(key)
+	if !reflect.DeepEqual(want, value) {
+		t.Errorf("%v != %v", want, value)
+	}
+
+	// set non-interface struct
+	key = "new.struct.there"
+	want = map[interface{}]interface{}{"A": "aye", "B": "bee"}
+	value = struct {
+		A string
+		B string
+		c string} {
+		A: "aye",
+		B: "bee",
+		c: "see",
+	}
+	settings.Set(key, value)
+	value, _ = settings.Raw(key)
+	if !reflect.DeepEqual(want, value) {
+		t.Errorf("%v != %v", want, value)
+	}
 }
 
 func TestAppend(t *testing.T) {
