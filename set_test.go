@@ -83,7 +83,8 @@ func TestSet(t *testing.T) {
 	value = struct {
 		A string
 		B string
-		c string} {
+		c string
+	}{
 		A: "aye",
 		B: "bee",
 		c: "see",

@@ -3,6 +3,7 @@ package settings
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestRawDflt(t *testing.T) {
@@ -144,6 +145,69 @@ func TestBoolMapDflt(t *testing.T) {
 	settings := getSettings()
 	dflt := map[string]bool{"yes": true, "no": false}
 	have := settings.BoolMapDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestDurationDflt(t *testing.T) {
+	settings := getSettings()
+	dflt := 10 * time.Second
+	have := settings.DurationDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestDurationArrayDflt(t *testing.T) {
+	settings := getSettings()
+	dflt := []time.Duration{5 * time.Second, 10 * time.Minute, 15 * time.Hour}
+	have := settings.DurationArrayDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestDurationMapDflt(t *testing.T) {
+	settings := getSettings()
+	dflt := map[string]time.Duration{
+		"seconds": 5 * time.Second,
+		"minutes": 10 * time.Minute,
+		"hours":   15 * time.Hour,
+	}
+	have := settings.DurationMapDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestSizeDflt(t *testing.T) {
+	settings := getSettings()
+	var dflt int64 = 1025
+	have := settings.SizeDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestSizeArrayDflt(t *testing.T) {
+	settings := getSettings()
+	dflt := []int64{128, 256, 512, 1024}
+	have := settings.SizeArrayDflt("nope", dflt)
+	if !reflect.DeepEqual(dflt, have) {
+		t.Errorf("%v != %v", dflt, have)
+	}
+}
+
+func TestSizeMapDflt(t *testing.T) {
+	settings := getSettings()
+	dflt := map[string]int64{
+		"byte":     1,
+		"kilobyte": 1024,
+		"megabyte": 1024 * 1024,
+		"gigabyte": 1014 * 1024 * 1024,
+	}
+	have := settings.SizeMapDflt("nope", dflt)
 	if !reflect.DeepEqual(dflt, have) {
 		t.Errorf("%v != %v", dflt, have)
 	}

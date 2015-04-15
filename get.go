@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Get a value from the settings object.
@@ -341,6 +342,116 @@ func (s *Settings) BoolMap(key string) (map[string]bool, error) {
 			}
 		}
 		return boolMap, nil
+	} else {
+		return nil, err
+	}
+}
+
+// Get a duration value.
+func (s *Settings) Duration(key string) (time.Duration, error) {
+	if value, err := s.String(key); err == nil {
+		return time.ParseDuration(value)
+	} else {
+		return 0 * time.Nanosecond, err
+	}
+}
+
+// Get an array of durations values.
+func (s *Settings) DurationArray(key string) ([]time.Duration, error) {
+	if value, err := s.Raw(key); err == nil {
+		if items, ok := value.([]interface{}); ok {
+			array := make([]time.Duration, len(items))
+			for n, item := range items {
+				itemStr := fmt.Sprint(item)
+				if durationValue, err := time.ParseDuration(itemStr); err == nil {
+					array[n] = durationValue
+				} else {
+					return nil, err
+				}
+			}
+			return array, nil
+		} else {
+			return nil, TypeError
+		}
+	} else {
+		return nil, err
+	}
+}
+
+// Get a map of durations.
+func (s *Settings) DurationMap(key string) (map[string]time.Duration, error) {
+	if raw, err := s.Raw(key); err == nil {
+		rawMap, ok := raw.(map[interface{}]interface{})
+		if !ok {
+			return nil, TypeError
+		}
+
+		durationMap := make(map[string]time.Duration)
+		for rawMapKey, rawMapValue := range rawMap {
+			keyStr := fmt.Sprintf("%v", rawMapKey)
+			valueStr := fmt.Sprint(rawMapValue)
+			if durationValue, err := time.ParseDuration(valueStr); err == nil {
+				durationMap[keyStr] = durationValue
+			} else {
+				return nil, err
+			}
+		}
+		return durationMap, nil
+	} else {
+		return nil, err
+	}
+}
+
+// Get a settings value as a size (in bytes).
+func (s *Settings) Size(key string) (int64, error) {
+	if value, err := s.String(key); err == nil {
+		return ParseSize(value)
+	} else {
+		return 0, err
+	}
+}
+
+// Get an array of size values.
+func (s *Settings) SizeArray(key string) ([]int64, error) {
+	if value, err := s.Raw(key); err == nil {
+		if items, ok := value.([]interface{}); ok {
+			array := make([]int64, len(items))
+			for n, item := range items {
+				itemStr := fmt.Sprint(item)
+				if sizeValue, err := ParseSize(itemStr); err == nil {
+					array[n] = sizeValue
+				} else {
+					return nil, err
+				}
+			}
+			return array, nil
+		} else {
+			return nil, TypeError
+		}
+	} else {
+		return nil, err
+	}
+}
+
+// Get a map of sizes.
+func (s *Settings) SizeMap(key string) (map[string]int64, error) {
+	if raw, err := s.Raw(key); err == nil {
+		rawMap, ok := raw.(map[interface{}]interface{})
+		if !ok {
+			return nil, TypeError
+		}
+
+		sizeMap := make(map[string]int64)
+		for rawMapKey, rawMapValue := range rawMap {
+			keyStr := fmt.Sprintf("%v", rawMapKey)
+			valueStr := fmt.Sprint(rawMapValue)
+			if sizeValue, err := ParseSize(valueStr); err == nil {
+				sizeMap[keyStr] = sizeValue
+			} else {
+				return nil, err
+			}
+		}
+		return sizeMap, nil
 	} else {
 		return nil, err
 	}

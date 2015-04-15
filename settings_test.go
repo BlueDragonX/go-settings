@@ -63,6 +63,28 @@ bool-map:
   "yes": true
   "no": false
 
+duration-array:
+- 12s
+- 3m
+- 5h
+
+duration-map:
+  seconds: 12s
+  minutes: 3m
+  hours: 5h
+
+size-array:
+- 15k
+- 32mb
+- 6g
+- 2tb
+
+size-map:
+  kb: 15k
+  mb: 32mb
+  gb: 6g
+  tb: 2tb
+
 settings-array:
 - name: one
   value: I won!
@@ -84,6 +106,8 @@ values:
   integer: 1
   float: 2.3
   string: value
+  duration: 5m
+  size: 15t
 
 nested:
   array:

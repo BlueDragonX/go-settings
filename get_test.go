@@ -3,6 +3,7 @@ package settings
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func TestRaw(t *testing.T) {
@@ -131,6 +132,8 @@ func TestObject(t *testing.T) {
 		values["integer"] = 1
 		values["float"] = 2.3
 		values["string"] = "value"
+		values["duration"] = "5m"
+		values["size"] = "15t"
 		want := &Settings{Key: key, Values: values}
 		if !reflect.DeepEqual(want, item) {
 			t.Errorf("%v != %v", want, item)
@@ -390,6 +393,98 @@ func TestBoolMap(t *testing.T) {
 	// valid string map
 	want := map[string]bool{"yes": true, "no": false}
 	if value, err := settings.BoolMap("bool-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestDuration(t *testing.T) {
+	settings := getSettings()
+	want := 5 * time.Minute
+	if value, err := settings.Duration("values.duration"); err == nil {
+		if want != value {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestDurationArray(t *testing.T) {
+	settings := getSettings()
+
+	// valid string array
+	want := []time.Duration{12 * time.Second, 3 * time.Minute, 5 * time.Hour}
+	if value, err := settings.DurationArray("duration-array"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestDurationMap(t *testing.T) {
+	settings := getSettings()
+
+	// valid string map
+	want := map[string]time.Duration{
+		"seconds": 12 * time.Second,
+		"minutes": 3 * time.Minute,
+		"hours":   5 * time.Hour,
+	}
+	if value, err := settings.DurationMap("duration-map"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestSize(t *testing.T) {
+	settings := getSettings()
+	var want int64 = 15 * 1024 * 1024 * 1024 * 1024
+	if value, err := settings.Size("values.size"); err == nil {
+		if want != value {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestSizeArray(t *testing.T) {
+	settings := getSettings()
+
+	want := []int64{
+		15 * 1024,
+		32 * 1024 * 1024,
+		6 * 1024 * 1024 * 1024,
+		2 * 1024 * 1024 * 1024 * 1024,
+	}
+	if value, err := settings.SizeArray("size-array"); err == nil {
+		if !reflect.DeepEqual(want, value) {
+			t.Errorf("%v != %v", want, value)
+		}
+	} else {
+		t.Error(err)
+	}
+}
+
+func TestSizeMap(t *testing.T) {
+	settings := getSettings()
+
+	want := map[string]int64{
+		"kb": 15 * 1024,
+		"mb": 32 * 1024 * 1024,
+		"gb": 6 * 1024 * 1024 * 1024,
+		"tb": 2 * 1024 * 1024 * 1024 * 1024,
+	}
+	if value, err := settings.SizeMap("size-map"); err == nil {
 		if !reflect.DeepEqual(want, value) {
 			t.Errorf("%v != %v", want, value)
 		}

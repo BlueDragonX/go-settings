@@ -1,5 +1,9 @@
 package settings
 
+import (
+	"time"
+)
+
 // Get a value from the settings object. Return `dflt` if an error occurs.
 func (s *Settings) RawDflt(key string, dflt interface{}) interface{} {
 	if value, err := s.Raw(key); err == nil {
@@ -138,6 +142,60 @@ func (s *Settings) BoolArrayDflt(key string, dflt []bool) []bool {
 // Get a map of bool values. Return `dflt` if an error occurs.
 func (s *Settings) BoolMapDflt(key string, dflt map[string]bool) map[string]bool {
 	if value, err := s.BoolMap(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get a duration value. Return `dflt` if an error occurs.
+func (s *Settings) DurationDflt(key string, dflt time.Duration) time.Duration {
+	if value, err := s.Duration(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get an array of duration values. Return `dflt` if an error occurs.
+func (s *Settings) DurationArrayDflt(key string, dflt []time.Duration) []time.Duration {
+	if value, err := s.DurationArray(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get a map of duration values. Return `dflt` if an error occurs.
+func (s *Settings) DurationMapDflt(key string, dflt map[string]time.Duration) map[string]time.Duration {
+	if value, err := s.DurationMap(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get a size value. Return `dflt` if an error occurs.
+func (s *Settings) SizeDflt(key string, dflt int64) int64 {
+	if value, err := s.Size(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get an array of size values. Return `dflt` if an error occurs.
+func (s *Settings) SizeArrayDflt(key string, dflt []int64) []int64 {
+	if value, err := s.SizeArray(key); err == nil {
+		return value
+	} else {
+		return dflt
+	}
+}
+
+// Get a map of size values. Return `dflt` if an error occurs.
+func (s *Settings) SizeMapDflt(key string, dflt map[string]int64) map[string]int64 {
+	if value, err := s.SizeMap(key); err == nil {
 		return value
 	} else {
 		return dflt
