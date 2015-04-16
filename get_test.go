@@ -120,6 +120,31 @@ func TestRaw(t *testing.T) {
 	}
 }
 
+func TestHas(t *testing.T) {
+	type testInput struct {
+		key string
+		has bool
+	}
+
+	testInputs := []testInput{
+		{"mapping", true},
+		{"mapping.a", true},
+		{"mapping.c", false},
+		{"values", true},
+		{"values.bool", true},
+		{"values.bool.true", false},
+		{"nope", false},
+		{"nope.never", false},
+	}
+
+	settings := getSettings()
+	for _, input := range testInputs {
+		if settings.Has(input.key) != input.has {
+			t.Errorf("Has(%s) != %t", input.key, input.has)
+		}
+	}
+}
+
 func TestObject(t *testing.T) {
 	var key string
 	settings := getSettings()

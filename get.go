@@ -33,6 +33,12 @@ func (s *Settings) Raw(key string) (interface{}, error) {
 	return data, nil
 }
 
+// Has returns true if a value exists.
+func (s *Settings) Has(key string) bool {
+	_, err := s.Raw(key)
+	return err == nil
+}
+
 // Get a settings object.
 func (s *Settings) Object(key string) (*Settings, error) {
 	if value, err := s.Raw(key); err == nil {
