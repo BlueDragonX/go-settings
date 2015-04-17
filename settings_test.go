@@ -155,6 +155,16 @@ func getBasicFile(t *testing.T) (string, map[interface{}]interface{}) {
 	return path, want
 }
 
+func TestNew(t *testing.T) {
+	s := New()
+	if s.Key != "" {
+		t.Errorf("new settings has Key: %s", s.Key)
+	}
+	if s.Values == nil {
+		t.Error("new settings has Values == nil")
+	}
+}
+
 func TestParse(t *testing.T) {
 	data, want := getBasicInput()
 	if have, err := Parse(data); err == nil {

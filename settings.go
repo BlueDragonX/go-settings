@@ -13,6 +13,11 @@ type Settings struct {
 	Values map[interface{}]interface{}
 }
 
+// New returns the pointer to a freshly allocated settings struct.
+func New() *Settings {
+	return &Settings{"", map[interface{}]interface{}{}}
+}
+
 // Parse the provided YAML into a new Settings object.
 func Parse(data []byte) (*Settings, error) {
 	values := make(map[interface{}]interface{})
